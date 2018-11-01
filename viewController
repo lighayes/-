@@ -41,7 +41,7 @@ class ViewController: UIViewController {
         return myView
     }
     
-    func scan(a:Int,b:Int,btn:UIButton,label:UILabel)
+    func scan(a:Int,b:Int,btn:UIButton,label:UILabel)//各种addtarget的集合
     {
         if buttonText：[a][b] == "="
         {
@@ -83,7 +83,7 @@ class ViewController: UIViewController {
             btn.addTarget(self, action: #selector(back(btn:)), for: .touchUpInside)
         }
     }
-    @objc func back(btn:UIButton)
+    @objc func back(btn:UIButton)//返回按钮
     {
         if numStore.count != 0
         {
@@ -91,7 +91,7 @@ class ViewController: UIViewController {
         storeToStr()
         }
     }
-    @objc func plusOrMinus(btn:UIButton)
+    @objc func plusOrMinus(btn:UIButton)//正负
     {
         
         if a == 0
@@ -106,7 +106,7 @@ class ViewController: UIViewController {
         }
         storeToStr()
     }
-    @objc func singleSymbolMath(btn:UIButton)
+    @objc func singleSymbolMath(btn:UIButton)//cos等按钮
     {
         str = label.text!
         resultFirst = Double(str)!
@@ -123,7 +123,7 @@ class ViewController: UIViewController {
             print("good")
         }
     }
-    @objc func resultIs(btn:UIButton)
+    @objc func resultIs(btn:UIButton)//等于
     {
         switch str {
         case "e":
@@ -151,7 +151,7 @@ class ViewController: UIViewController {
         resultFirst = Double(label.text!)!
         
     }
-    @objc func symbolMath(btn:UIButton)
+    @objc func symbolMath(btn:UIButton)//加减乘除赋值
     {
         str = label.text!
         symbol = btn.currentTitle!
@@ -166,7 +166,7 @@ class ViewController: UIViewController {
         }
         numStore.removeAll()
     }
-    @objc func acClean(btn:UIButton)
+    @objc func acClean(btn:UIButton)//ac
     {
         a = 0
         label.text = "0.0"
@@ -174,17 +174,17 @@ class ViewController: UIViewController {
         numStore.removeAll()
         symbol = "0.0"//去除之前的符号
     }
-    @objc func tapeNum(btn:UIButton)
+    @objc func tapeNum(btn:UIButton)//按数字显示
     {
         numStore.append(btn.currentTitle!)
         storeToStr()
     }
-    func storeToStr()
+    func storeToStr()//将数组转为string
     {
         str = numStore.joined(separator: "")
         label.text = str
     }
-    func addLabel()
+    func addLabel()//label属性
     {
         label.frame = CGRect(x: 0, y: UIScreen.main.bounds.height-6.4*widTH, width: widTH*4.7, height: 1.5*widTH)
         label.textColor = UIColor(red: 54/255, green: 54/255, blue: 54/255, alpha: 1)
@@ -196,16 +196,16 @@ class ViewController: UIViewController {
     }
     
     
-    @objc func tapeIn(btn:UIButton)
+    @objc func tapeIn(btn:UIButton)//特效按下
     {
         btn.backgroundColor = UIColor(red: 245/255, green: 245/255, blue: 245/255, alpha: 1)
      
     }
-    @objc func tapeUpSpecial(btn:UIButton)
+    @objc func tapeUpSpecial(btn:UIButton)//等于键特效
     {
         btn.backgroundColor = UIColor.orange
     }
-    @objc func tapeUp(btn:UIButton)
+    @objc func tapeUp(btn:UIButton)//特效起来恢复
     {
         btn.backgroundColor = UIColor.white
   
