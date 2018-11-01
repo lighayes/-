@@ -1,0 +1,218 @@
+import UIKit
+
+
+class ViewController: UIViewController {
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.view.backgroundColor = UIColor(red: 245/255, green: 245/255, blue: 245/255, alpha: 1)//alpha为透明度
+        addLabel()
+        self.view.addSubview(addButton(label: label))
+        
+        // Do any additional setup after loading the view, typically from a nib.
+    }
+    var numStore = [String]()
+    var numScan = [CChar]()
+    var str:String = "",symbol:String = "",resultFirst:Double = 0,resultNext:Double = 0,x:Int = 1,a:Int = 0
+    let widTH = UIScreen.main.bounds.width/5
+    let label = UILabel()
+    var buttonText： = [["AC","<-","%","+/-","+"],["sin","7","8","9","-"],["cos","4","5","6","×"],["tan","1","2","3","÷"],["∏","e","0",".","="]]
+    func addButton(label:UILabel) -> UIView {
+        let myView = UIView(frame: CGRect(x: 0, y: UIScreen.main.bounds.height-UIScreen.main.bounds.width, width: UIScreen.main.bounds.width, height:5*widTH ))
+       
+        for a in 0...4
+        {
+            for b in 0...4
+            {
+                
+                let btn = UIButton()
+                btn.backgroundColor = UIColor.white
+                btn.titleLabel?.font = UIFont.systemFont(ofSize: 24)//为什么要？号
+                btn.setTitleColor(UIColor.black, for: .normal)
+                btn.setTitle(buttonText：[a][b], for:.normal)
+                btn.layer.borderColor = UIColor.lightGray.cgColor
+                btn.layer.borderWidth = 0.225
+                btn.frame = CGRect(x: widTH*CGFloat(b), y:CGFloat(a)*widTH, width: widTH, height: widTH)
+                
+                scan(a: a, b: b, btn: btn,label: label)
+                myView.addSubview(btn)
+            }
+        }
+        return myView
+    }
+    
+    func scan(a:Int,b:Int,btn:UIButton,label:UILabel)
+    {
+        if buttonText：[a][b] == "="
+        {
+            btn.backgroundColor = UIColor.orange
+            btn.setTitleColor(UIColor.white, for: .normal)
+            btn.layer.borderColor = UIColor.orange.cgColor
+            btn.addTarget(self, action: #selector(tapeUpSpecial(btn:)), for: .touchUpInside)
+            btn.addTarget(self, action: #selector(resultIs(btn:)), for: .touchUpInside)
+        }
+        if buttonText：[a][b] == "AC"
+        {
+            btn.addTarget(self, action: #selector(acClean), for: .touchUpInside)
+            btn.setTitleColor(UIColor.orange, for: .normal)
+        }
+        btn.addTarget(self, action: #selector(tapeIn(btn:)), for: .touchDown)
+        if buttonText：[a][b] != "="
+        {
+            btn.addTarget(self, action: #selector(tapeUp(btn:)), for: .touchUpInside)
+        }
+        if a>0&&b>0&&a<5&&b<4||buttonText：[a][b] == "∏"
+        {
+            btn.addTarget(self, action: #selector(tapeNum(btn:)), for: .touchUpInside)
+        }
+        
+        if b == 4&&a != 4
+        {
+            btn.addTarget(self, action: #selector(symbolMath(btn:)), for: .touchUpInside)
+        }
+        if a>0&&a<4&&b == 0||a == 0&&b == 2
+        {
+            btn.addTarget(self, action: #selector(singleSymbolMath(btn:)), for: .touchUpInside)
+        }
+        if buttonText：[a][b] == "+/-"
+        {
+            btn.addTarget(self, action: #selector(plusOrMinus(btn:)), for: .touchUpInside)
+        }
+        if buttonText：[a][b] == "<-"
+        {
+            btn.addTarget(self, action: #selector(back(btn:)), for: .touchUpInside)
+        }
+    }
+    @objc func back(btn:UIButton)
+    {
+        if numStore.count != 0
+        {
+        numStore.removeLast()
+        storeToStr()
+        }
+    }
+    @objc func plusOrMinus(btn:UIButton)
+    {
+        
+        if a == 0
+        {
+        numStore.insert("-", at: 0)
+            a = 1
+        }
+        else
+        {
+            numStore.remove(at: 0)
+            a = 0
+        }
+        storeToStr()
+    }
+    @objc func singleSymbolMath(btn:UIButton)
+    {
+        str = label.text!
+        resultFirst = Double(str)!
+        switch btn.currentTitle {
+        case "%":
+            label.text = "\(resultFirst * 0.01)"
+        case "sin":
+            label.text = "\(sin(resultFirst))"
+        case "tan":
+            label.text = "\(tan(resultFirst))"
+        case "cos":
+            label.text = "\(cos(resultFirst))"
+        default:
+            print("good")
+        }
+    }
+    @objc func resultIs(btn:UIButton)
+    {
+        switch str {
+        case "e":
+            resultNext = exp(1)
+        case "∏":
+            resultNext = 3.1415926
+        default:
+            resultNext = Double(str)!
+        }
+        
+        
+        numStore.removeAll()
+        switch symbol {
+        case "+":
+            label.text = "\(resultNext + resultFirst)"
+        case "-":
+            label.text = "\(resultFirst - resultNext)"
+        case "×":
+            label.text = "\(resultNext * resultFirst)"
+        case "÷":
+            label.text = "\(resultFirst / resultNext)"
+        default:
+            label.text = "\(resultNext)"
+        }
+        resultFirst = Double(label.text!)!
+        
+    }
+    @objc func symbolMath(btn:UIButton)
+    {
+        str = label.text!
+        symbol = btn.currentTitle!
+        label.text = symbol
+        switch str {
+        case "e":
+            resultFirst = exp(1)
+        case "∏":
+            resultFirst = 3.1415926
+        default:
+            resultFirst = Double(str)!
+        }
+        numStore.removeAll()
+    }
+    @objc func acClean(btn:UIButton)
+    {
+        a = 0
+        label.text = "0.0"
+        str = "0"
+        numStore.removeAll()
+        symbol = "0.0"//去除之前的符号
+    }
+    @objc func tapeNum(btn:UIButton)
+    {
+        numStore.append(btn.currentTitle!)
+        storeToStr()
+    }
+    func storeToStr()
+    {
+        str = numStore.joined(separator: "")
+        label.text = str
+    }
+    func addLabel()
+    {
+        label.frame = CGRect(x: 0, y: UIScreen.main.bounds.height-6.4*widTH, width: widTH*4.7, height: 1.5*widTH)
+        label.textColor = UIColor(red: 54/255, green: 54/255, blue: 54/255, alpha: 1)
+        label.text = "0.0"
+        label.textAlignment = NSTextAlignment.right
+        label.font = UIFont.systemFont(ofSize: 72)
+        self.view.addSubview(label)
+        
+    }
+    
+    
+    @objc func tapeIn(btn:UIButton)
+    {
+        btn.backgroundColor = UIColor(red: 245/255, green: 245/255, blue: 245/255, alpha: 1)
+     
+    }
+    @objc func tapeUpSpecial(btn:UIButton)
+    {
+        btn.backgroundColor = UIColor.orange
+    }
+    @objc func tapeUp(btn:UIButton)
+    {
+        btn.backgroundColor = UIColor.white
+  
+    }
+
+   
+
+
+}
+
